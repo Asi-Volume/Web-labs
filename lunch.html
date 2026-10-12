@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Собрать ланч — Food Construct</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lunch.css">
+</head>
+<body class="lunch-page">
+
+    <header>
+        <h1>Food Construct</h1>
+        <nav>
+            <a href="index.html">О нас</a>
+            <a class="active" href="lunch.html">Собрать ланч</a>
+            <a href="#">Заказы</a>
+            <a href="feedback.html">Обратная связь</a>
+            <a href="#contacts">Контакты</a>
+            <a href="login.html">Вход</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="combo-section">
+            <h2>Доступные для заказа комбо</h2>
+            <div class="combo-grid">
+                <div class="combo">
+                    <div class="combo-item">
+                        <img src="img/YSLsoup.jpg" alt="Суп">
+                        <p>Суп</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLmain.jpg" alt="Главное блюдо">
+                        <p>Главное блюдо</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLsalad.jpg" alt="Салат">
+                        <p>Салат</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLdrink.jpg" alt="Напиток">
+                        <p>Напиток</p>
+                    </div>
+                </div>
+                <div class="combo">
+                    <div class="combo-item">
+                        <img src="img/YSLsoup.jpg" alt="Суп">
+                        <p>Суп</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLmain.jpg" alt="Главное блюдо">
+                        <p>Главное блюдо</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLdrink.jpg" alt="Напиток">
+                        <p>Напиток</p>
+                    </div>
+                </div>
+                <div class="combo">
+                    <div class="combo-item">
+                        <img src="img/YSLsoup.jpg" alt="Суп">
+                        <p>Суп</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLsalad.jpg" alt="Салат">
+                        <p>Салат</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLdrink.jpg" alt="Напиток">
+                        <p>Напиток</p>
+                    </div>
+                </div>
+                <div class="combo">
+                    <div class="combo-item">
+                        <img src="img/YSLmain.jpg" alt="Главное блюдо">
+                        <p>Главное блюдо</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLsalad.jpg" alt="Салат">
+                        <p>Салат</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLdrink.jpg" alt="Напиток">
+                        <p>Напиток</p>
+                    </div>
+                </div>
+                <div class="combo">
+                    <div class="combo-item">
+                        <img src="img/YSLmain.jpg" alt="Главное блюдо">
+                        <p>Главное блюдо</p>
+                    </div>
+                    <div class="combo-item">
+                        <img src="img/YSLdrink.jpg" alt="Напиток">
+                        <p>Напиток</p>
+                    </div>
+                </div>
+                <div class="combo">
+                    <div class="combo-item">
+                        <img src="img/YSLdesert.jpg" alt="Десерт">
+                        <p>Десерт</p>
+                    </div>
+                    <p class="combo-note">(Можно добавить к любому заказу)</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="menu-section">
+            <h2>Выберите суп</h2>
+            <div class="dishes" id="soup-container"></div>
+        </section>
+
+        <section class="menu-section">
+            <h2>Выберите главное блюдо</h2>
+            <div class="dishes" id="main-container"></div>
+        </section>
+
+        <section class="menu-section">
+            <h2>Выберите салат</h2>
+            <div class="dishes" id="salad-container"></div>
+        </section>
+
+        <section class="menu-section">
+            <h2>Выберите напиток</h2>
+            <div class="dishes" id="drink-container"></div>
+        </section>
+
+        <section class="menu-section">
+            <h2>Выберите десерт</h2>
+            <div class="dishes" id="dessert-container"></div>
+        </section>
+
+        <section class="order-section">
+            <h2>Сделать заказ</h2>
+
+            <form action="https://httpbin.org/post" method="POST" id="order-form">
+            <div class="order-columns">
+                <div class="order-block">
+                    <h3>Ваш заказ</h3>
+
+                    <div id="order-summary">
+                        <p class="order-empty">Ничего не выбрано</p>
+                    </div>
+
+                    <label for="comment">Комментарии к заказу</label>
+                    <textarea id="comment" name="comment" rows="6"></textarea>
+
+                    <input type="hidden" name="soup" id="hidden-soup">
+                    <input type="hidden" name="main" id="hidden-main">
+                    <input type="hidden" name="salad" id="hidden-salad">
+                    <input type="hidden" name="drink" id="hidden-drink">
+                    <input type="hidden" name="dessert" id="hidden-dessert">
+                </div>
+
+                <div class="order-block">
+                    <h3>Ваши данные</h3>
+
+                    <label for="name">Имя</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="order-email">Email</label>
+                    <input type="email" id="order-email" name="email" required>
+
+                    <label class="order-checkbox">
+                        <input type="checkbox" name="promotions" checked>
+                        Получать информацию о скидках и акциях
+                    </label>
+
+                    <label for="phone">Номер телефона</label>
+                    <input type="tel" id="phone" name="phone" required>
+
+                    <label for="address">Адрес доставки</label>
+                    <input type="text" id="address" name="address" required>
+                    <p class="note">Доставка осуществляется только по Москве</p>
+
+                    <p class="delivery-title">Время доставки:</p>
+                    <label class="radio">
+                        <input type="radio" name="delivery" value="fast" checked>
+                        Как можно скорее
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="delivery" value="time">
+                        К указанному времени
+                    </label>
+
+                    <label for="delivery-time">Укажите время доставки</label>
+                    <input type="time" id="delivery-time" name="delivery-time" min="07:00" max="23:00">
+
+                    <p class="note">Доступное время доставки с 7:00 до 23:00</p>
+
+                    <div class="form-buttons">
+                        <button type="reset">Сбросить</button>
+                        <button type="submit">Отправить</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </section>
+    </main>
+
+    <footer id="contacts">
+        <p>Позвонить нам <a href="tel:+70000000000">+7-000-000-00-00</a></p>
+    </footer>
+
+<script src="dishes.js"></script>
+<script src="lunch.js"></script>
+
+</body>
+</html>

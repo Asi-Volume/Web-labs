@@ -1,0 +1,435 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    min-height: 100%;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+    background-color: #ffffff;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 20px 20px;
+    width: 100%;
+}
+
+header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 25px;
+}
+
+nav {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    padding: 5px 0;
+}
+
+nav a {
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: #000;
+    transition: color 0.3s ease;
+}
+
+nav a:hover,
+nav a.active {
+    color: #d35400;
+}
+
+main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px 60px 20px;
+    width: 100%;
+    flex: 1;
+}
+
+.about {
+    margin-bottom: 40px;
+}
+
+.about img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 25px;
+}
+
+.about h2,
+.benefits h2,
+.popular h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.about p {
+    font-size: 17px;
+    font-weight: 400;
+    color: #222;
+}
+
+.benefits {
+    margin-bottom: 40px;
+}
+
+.benefits ul {
+    list-style-position: inside;
+    padding-left: 0;
+}
+
+.benefits li {
+    font-size: 17px;
+    font-weight: 400;
+    color: #222;
+    margin-bottom: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 750px;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    color: #222;
+}
+
+table th,
+table td {
+    padding: 12px 15px;
+    border: 1px solid #999;
+    text-align: left;
+}
+
+table th {
+    font-weight: 700;
+    text-align: center;
+    background-color: #ffffff;
+    color: #000;
+}
+
+table td:first-child {
+    text-align: center;
+    width: 50px;
+}
+
+table td:last-child,
+table th:last-child,
+table th:nth-child(3),
+table td:nth-child(3) {
+    text-align: center;
+}
+
+footer {
+    background-color: black;
+    color: white;
+    padding: 25px 20px;
+    margin-top: 20px;
+}
+
+footer p {
+    font-size: 17px;
+    font-weight: 400;
+    color: white;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+footer a {
+    text-decoration: none;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: white;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #d35400;
+}
+
+/* Стили обратной связи */
+
+.feedback {
+    margin-bottom: 40px;
+}
+
+.feedback h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.feedback form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 600px;
+}
+
+.feedback label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.feedback input[type="text"],
+.feedback input[type="email"],
+.feedback input[type="file"],
+.feedback select,
+.feedback textarea {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fafafa;
+    color: #222;
+    width: 100%;
+}
+
+.feedback input:focus,
+.feedback select:focus,
+.feedback textarea:focus {
+    outline: none;
+    border-color: #d35400;
+    background-color: #fff;
+}
+
+.feedback fieldset {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px 15px;
+}
+
+.feedback legend {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    padding: 0 5px;
+}
+
+.feedback fieldset label {
+    display: inline-block;
+    margin-right: 15px;
+    font-weight: 400;
+}
+
+.feedback textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.feedback .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.feedback button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    background-color: #d35400;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.feedback button:hover {
+    background-color: #b34700;
+}
+
+/* Стили аутентификации */
+
+.login-page {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.login-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url('img/eatlogin.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(8px);
+    transform: scale(1.1);
+    z-index: 0;
+}
+
+.login-box {
+    position: relative;
+    z-index: 1;
+    background-color: #ffffff;
+    padding: 40px 45px;
+    border-radius: 4px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 430px;
+}
+
+.login-box h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #000;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-box form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-box label {
+    font-size: 15px;
+    font-weight: 400;
+    color: #222;
+    margin-bottom: 6px;
+}
+
+.login-box input[type="text"],
+.login-box input[type="password"] {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #222;
+    width: 100%;
+    margin-bottom: 18px;
+}
+
+.login-box input[type="text"]:focus,
+.login-box input[type="password"]:focus {
+    outline: none;
+    border-color: #888;
+}
+
+.login-box .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.login-box .checkbox input {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.login-box button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    background-color: #000000;
+    border: none;
+    border-radius: 4px;
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-box button:hover {
+    background-color: #333333;
+}
+
+.login-box .back-link {
+    display: block;
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-box .back-link:hover {
+    color: #000;
+}
+
+/* Адаптивность главной страницы */
+
+@media (max-width: 600px) {
+    header h1 {
+        text-align: center;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    nav a {
+        font-size: 21px;
+    }
+
+    .about img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 400px) {
+    table {
+        font-size: 12px;
+    }
+
+    table th,
+    table td {
+        padding: 8px 6px;
+    }
+
+    .about p,
+    .benefits li {
+        font-size: 15px;
+    }
+}

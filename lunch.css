@@ -1,0 +1,425 @@
+/* Дополнительные стили страницы «Собрать ланч» */
+
+.lunch-page {
+    background-color: #ffffff;
+}
+
+.lunch-page main {
+    max-width: 1200px;
+}
+
+.menu-section {
+    margin-bottom: 55px;
+}
+
+.menu-section h2,
+.order-section h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+.dishes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.dish {
+    display: flex;
+    flex-direction: column;
+    padding: 30px 40px;
+    border-radius: 35px;
+    cursor: pointer;
+    background-color: #fff;
+    filter: drop-shadow(17px 19px 24px rgba(0, 0, 0, 0.13));
+}
+
+.dish:hover {
+    outline: 2px solid #d35400;
+}
+
+.dish:hover button {
+    background-color: #d35400;
+    color: #fff;
+}
+
+.dish.selected {
+    outline: 2px solid #d35400;
+}
+
+.dish.selected button {
+    background-color: #d35400;
+    color: #fff;
+}
+
+.dish img {
+    width: 100%;
+    height: 250px;
+    display: block;
+    object-fit: contain;
+    border-radius: 35px;
+    margin-bottom: 15px;
+}
+
+.dish .price {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 15px;
+}
+
+.dish .name {
+    font-size: 20px;
+    font-weight: 600;
+    min-height: 60px;
+}
+
+.dish .weight {
+    color: #888;
+    font-size: 18px;
+    margin-top: auto;
+}
+
+.dish button {
+    margin-top: 15px;
+    align-self: flex-start;
+    padding: 10px 30px;
+    border: none;
+    border-radius: 10px;
+    background-color: #f1eee9;
+    color: #222;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.order-section {
+    margin-top: 30px;
+    margin-bottom: 50px;
+}
+
+.order-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 70px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.order-block {
+    display: flex;
+    flex-direction: column;
+}
+
+.order-block h3 {
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+.order-block label:not(.order-checkbox):not(.radio) {
+    font-size: 17px;
+    margin-bottom: 7px;
+}
+
+.order-block input[type="text"],
+.order-block input[type="email"],
+.order-block input[type="tel"],
+.order-block input[type="time"],
+.order-block select,
+.order-block textarea {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 22px;
+    border: 1px solid #999;
+    border-radius: 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    background-color: #fff;
+}
+
+.order-block textarea {
+    resize: vertical;
+}
+
+.order-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: -5px 0 22px;
+}
+
+.order-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+.note {
+    font-size: 15px;
+    font-style: italic;
+    margin-top: -15px;
+    margin-bottom: 22px;
+}
+
+.delivery-title {
+    font-size: 17px;
+    margin-bottom: 8px;
+}
+
+.radio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+
+.radio input {
+    width: 20px;
+    height: 20px;
+}
+
+.form-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
+}
+
+.form-buttons button {
+    padding: 10px 35px;
+    border: 1px solid #222;
+    background-color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Блок "Ваш заказ" */
+#order-summary {
+    margin-bottom: 25px;
+}
+
+.order-empty {
+    font-size: 17px;
+    font-weight: 400;
+    color: #222;
+}
+
+.order-category {
+    margin-bottom: 25px;
+}
+
+.order-category-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 5px;
+}
+
+.order-dish {
+    font-size: 17px;
+    font-weight: 400;
+    color: #222;
+    margin: 0;
+}
+
+.order-total {
+    margin-top: 5px;
+}
+
+.order-total-price {
+    font-size: 22px;
+    font-weight: 700;
+    color: #000;
+}
+
+@media (max-width: 800px) {
+    .dishes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .order-columns {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 600px) {
+    .lunch-page header h1 {
+        text-align: center;
+    }
+
+    .lunch-page nav {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .dishes {
+        grid-template-columns: 1fr;
+    }
+
+    .order-columns {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .menu-section h2,
+    .order-section h2 {
+        font-size: 26px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 400px) {
+    .lunch-page main {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .dish {
+        padding: 20px;
+    }
+
+    .dish .price {
+        font-size: 22px;
+    }
+
+    .dish .name {
+        font-size: 18px;
+    }
+
+    .order-block h3 {
+        font-size: 21px;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .form-buttons button {
+        width: 100%;
+    }
+}
+
+
+.combo-section {
+    margin-bottom: 55px;
+}
+
+.combo-section h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+.combo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.combo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 18px;
+    padding: 15px;
+    text-align: center;
+}
+
+.combo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.combo-item img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.combo-item img:hover {
+    transform: translateY(-5px) scale(1.15);
+}
+
+.combo-item p {
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+}
+
+.combo-note {
+    width: 100%;
+    font-size: 12px;
+    font-style: italic;
+    color: #222;
+    text-align: center;
+    margin-top: 5px;
+}
+
+
+.notification-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.35);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.notification {
+    background-color: #ffffff;
+    border: 2px solid #222;
+    padding: 35px 45px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+}
+
+.notification-text {
+    font-size: 17px;
+    font-weight: 600;
+    color: #000;
+    line-height: 1.4;
+}
+
+.notification-button {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #222;
+    background-color: #ffffff;
+    border: 2px solid #222;
+    border-radius: 20px;
+    padding: 8px 25px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.notification-button:hover {
+    background-color: #222;
+    color: #ffffff;
+}
+
+
+@media (max-width: 800px) {
+    .combo-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .combo-grid {
+        grid-template-columns: 1fr;
+    }
+}
