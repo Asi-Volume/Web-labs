@@ -1,3 +1,11 @@
+let dishes = [];
+
+async function loadDishes() {
+    const response = await fetch('https://edu.std-900.ist.mospolytech.ru/labs/api/dishes');
+    const data = await response.json();
+    dishes = data;
+    renderDishes();
+}
 
 function renderDishes() {
     const containers = {
@@ -8,9 +16,16 @@ function renderDishes() {
         dessert: document.getElementById('dessert-container')
     };
 
+    Object.values(containers).forEach(c => {
+        if (c) c.innerHTML = '';
+    });
+
     const sortedDishes = [...dishes].sort((a, b) => a.name.localeCompare(b.name, 'ru'));
 
     sortedDishes.forEach(dish => {
+        const container = containers[dish.category];
+        if (!container) return;
+
         const card = document.createElement('div');
         card.className = 'dish';
         card.setAttribute('data-dish', dish.keyword);
@@ -24,7 +39,7 @@ function renderDishes() {
         `;
 
         card.querySelector('button').addEventListener('click', () => selectDish(dish.keyword));
-        containers[dish.category].appendChild(card);
+        container.appendChild(card);
     });
 }
 
@@ -107,7 +122,6 @@ function updateOrderSummary() {
     summary.innerHTML = html;
 }
 
-
 function validateLunch() {
     const hasSoup = !!selected.soup;
     const hasMain = !!selected.main;
@@ -117,34 +131,28 @@ function validateLunch() {
 
     const anything = hasSoup || hasMain || hasSalad || hasDrink || hasDessert;
 
-  
     if (!anything) {
         return 'Ничего не выбрано. Выберите блюда для заказа';
     }
 
-    // Только напиток и/или десерт
     if (!hasSoup && !hasMain && !hasSalad) {
         return 'Выберите главное блюдо';
     }
 
-    // Только салат (и, возможно, напиток/десерт), но нет супа и главного
     if (hasSalad && !hasSoup && !hasMain) {
         return 'Выберите суп или главное блюдо';
     }
 
-    // Есть суп, но нет ни главного, ни салата
     if (hasSoup && !hasMain && !hasSalad) {
         return 'Выберите главное блюдо/салат/стартер';
     }
 
-    // Есть суп и/или главное/салат, но нет напитка
     if (!hasDrink) {
         return 'Выберите напиток';
     }
 
-    return null; // всё в порядке
+    return null;
 }
-
 
 function showNotification(text) {
     const existing = document.querySelector('.notification-overlay');
@@ -172,7 +180,6 @@ function showNotification(text) {
     document.body.appendChild(overlay);
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('order-form');
     form.addEventListener('submit', (e) => {
@@ -182,7 +189,23 @@ document.addEventListener('DOMContentLoaded', () => {
             showNotification(error);
         }
     });
+
+    const deliveryTime = document.getElementById('delivery-time');
+    const radioFast = document.querySelector('input[name="delivery"][value="fast"]');
+    const radioTime = document.querySelector('input[name="delivery"][value="time"]');
+
+    function syncDeliveryTime() {
+        if (radioTime.checked) {
+            deliveryTime.disabled = false;
+        } else {
+            deliveryTime.disabled = true;
+            deliveryTime.value = '';
+        }
+    }
+
+    radioFast.addEventListener('change', syncDeliveryTime);
+    radioTime.addEventListener('change', syncDeliveryTime);
+    syncDeliveryTime();
+
+    loadDishes();
 });
-
-
-renderDishes();
