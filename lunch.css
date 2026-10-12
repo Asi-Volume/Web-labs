@@ -1,11 +1,69 @@
-/* Дополнительные стили страницы «Собрать ланч» */
-
 .lunch-page {
     background-color: #ffffff;
 }
 
 .lunch-page main {
     max-width: 1200px;
+}
+
+.combo-section {
+    margin-bottom: 55px;
+}
+
+.combo-section h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 25px;
+    color: #000;
+}
+
+.combo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+}
+
+.combo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 18px;
+    padding: 15px;
+    text-align: center;
+}
+
+
+
+.combo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.combo-item img {
+    width: 55px;
+    height: 55px;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.combo-item img:hover {
+    transform: translateY(-5px) scale(1.15);
+}
+
+.combo-item p {
+    font-size: 14px;
+    font-weight: 400;
+    color: #222;
+}
+
+.dessert-note {
+    font-size: 11px;
+    font-style: italic;
+    color: #222;
+    margin-top: 3px;
 }
 
 .menu-section {
@@ -193,7 +251,6 @@
     cursor: pointer;
 }
 
-/* Блок "Ваш заказ" */
 #order-summary {
     margin-bottom: 25px;
 }
@@ -231,137 +288,6 @@
     font-weight: 700;
     color: #000;
 }
-
-@media (max-width: 800px) {
-    .dishes {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .order-columns {
-        grid-template-columns: 1fr 1fr;
-        gap: 30px;
-    }
-}
-
-@media (max-width: 600px) {
-    .lunch-page header h1 {
-        text-align: center;
-    }
-
-    .lunch-page nav {
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .dishes {
-        grid-template-columns: 1fr;
-    }
-
-    .order-columns {
-        grid-template-columns: 1fr;
-        gap: 25px;
-    }
-
-    .menu-section h2,
-    .order-section h2 {
-        font-size: 26px;
-        text-align: center;
-    }
-}
-
-@media (max-width: 400px) {
-    .lunch-page main {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .dish {
-        padding: 20px;
-    }
-
-    .dish .price {
-        font-size: 22px;
-    }
-
-    .dish .name {
-        font-size: 18px;
-    }
-
-    .order-block h3 {
-        font-size: 21px;
-    }
-
-    .form-buttons {
-        flex-direction: column;
-    }
-
-    .form-buttons button {
-        width: 100%;
-    }
-}
-
-
-.combo-section {
-    margin-bottom: 55px;
-}
-
-.combo-section h2 {
-    text-align: center;
-    font-size: 28px;
-    margin-bottom: 25px;
-    color: #000;
-}
-
-.combo-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 30px;
-}
-
-.combo {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 18px;
-    padding: 15px;
-    text-align: center;
-}
-
-.combo-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.combo-item img {
-    width: 55px;
-    height: 55px;
-    object-fit: contain;
-    transition: transform 0.3s ease;
-}
-
-.combo-item img:hover {
-    transform: translateY(-5px) scale(1.15);
-}
-
-.combo-item p {
-    font-size: 14px;
-    font-weight: 400;
-    color: #222;
-}
-
-.combo-note {
-    width: 100%;
-    font-size: 12px;
-    font-style: italic;
-    color: #222;
-    text-align: center;
-    margin-top: 5px;
-}
-
 
 .notification-overlay {
     position: fixed;
@@ -411,15 +337,80 @@
     color: #ffffff;
 }
 
-
 @media (max-width: 800px) {
     .combo-grid {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .dishes {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .order-columns {
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+    }
 }
 
 @media (max-width: 600px) {
+    .lunch-page header h1 {
+        text-align: center;
+    }
+
+    .lunch-page nav {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
     .combo-grid {
         grid-template-columns: 1fr;
+    }
+
+    .dishes {
+        grid-template-columns: 1fr;
+    }
+
+    .order-columns {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .menu-section h2,
+    .order-section h2,
+    .combo-section h2 {
+        font-size: 26px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 400px) {
+    .lunch-page main {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .dish {
+        padding: 20px;
+    }
+
+    .dish .price {
+        font-size: 22px;
+    }
+
+    .dish .name {
+        font-size: 18px;
+    }
+
+    .order-block h3 {
+        font-size: 21px;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .form-buttons button {
+        width: 100%;
     }
 }
