@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оформить заказ — Food Construct</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lunch.css">
+</head>
+<body class="lunch-page">
+
+    <header>
+        <h1>Food Construct</h1>
+        <nav>
+            <a href="index.html">О нас</a>
+            <a href="lunch.html">Собрать ланч</a>
+            <a class="active" href="order.html">Оформить заказ</a>
+            <a href="#">Заказы</a>
+            <a href="feedback.html">Обратная связь</a>
+            <a href="#contacts">Контакты</a>
+            <a href="login.html">Вход</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="menu-section">
+            <h2>Состав заказа</h2>
+            <div id="order-composition" class="dishes"></div>
+            <p id="empty-cart-message" class="order-empty" style="display: none; text-align: center; margin-top: 20px;">
+                Ничего не выбрано. Чтобы добавить блюда в заказ, перейдите на страницу <a href="lunch.html" style="color: #d35400;">Собрать ланч</a>.
+            </p>
+        </section>
+
+        <section class="order-section">
+            <h2>Оформление заказа</h2>
+
+            <form id="checkout-form">
+            <div class="order-columns">
+                <div class="order-block">
+                    <h3>Ваш заказ</h3>
+                    <div id="order-summary"></div>
+
+                    <label for="comment">Комментарии к заказу</label>
+                    <textarea id="comment" name="comment" rows="6"></textarea>
+                </div>
+
+                <div class="order-block">
+                    <h3>Ваши данные</h3>
+
+                    <label for="name">Имя</label>
+                    <input type="text" id="name" name="name" required>
+
+                    <label for="order-email">Email</label>
+                    <input type="email" id="order-email" name="email" required>
+
+                    <label class="order-checkbox">
+                        <input type="checkbox" name="subscribe" checked>
+                        Получать информацию о скидках и акциях
+                    </label>
+
+                    <label for="phone">Номер телефона</label>
+                    <input type="tel" id="phone" name="phone" required>
+
+                    <label for="address">Адрес доставки</label>
+                    <input type="text" id="address" name="delivery_address" required>
+                    <p class="note">Доставка осуществляется только по Москве</p>
+
+                    <p class="delivery-title">Время доставки:</p>
+                    <label class="radio">
+                        <input type="radio" name="delivery_type" value="now" checked>
+                        Как можно скорее
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="delivery_type" value="by_time">
+                        К указанному времени
+                    </label>
+
+                    <label for="delivery-time">Укажите время доставки</label>
+                    <input type="time" id="delivery-time" name="delivery_time" min="07:00" max="23:00" step="300" disabled>
+
+                    <p class="note">Доступное время доставки с 7:00 до 23:00</p>
+
+                    <div class="form-buttons">
+                        <button type="submit" id="submit-btn">Отправить</button>
+                    </div>
+                </div>
+            </div>
+            </form>
+        </section>
+    </main>
+
+    <footer id="contacts">
+        <p>Позвонить нам <a href="tel:+70000000000">+7-000-000-00-00</a></p>
+    </footer>
+
+    <script src="order.js"></script>
+</body>
+</html>
