@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>История заказов — Food Construct</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lunch.css">
+</head>
+<body class="lunch-page">
+
+    <header>
+        <h1>Food Construct</h1>
+        <nav>
+            <a href="index.html">О нас</a>
+            <a href="lunch.html">Собрать ланч</a>
+            <a href="order.html">Оформить заказ</a>
+            <a class="active" href="orders.html">Заказы</a>
+            <a href="feedback.html">Обратная связь</a>
+            <a href="#contacts">Контакты</a>
+            <a href="login.html">Вход</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="menu-section">
+            <h2>История заказов</h2>
+            <div id="orders-container" style="overflow-x: auto;">
+                <p id="loading-text">Загрузка заказов...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contacts">
+        <p>Позвонить нам <a href="tel:+70000000000">+7-000-000-00-00</a></p>
+    </footer>
+
+    <!-- Модалка: Просмотр -->
+    <div id="modal-view" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('modal-view')">×</button>
+            <h3>Просмотр заказа</h3>
+            <div id="view-content" class="modal-body"></div>
+            <div class="modal-actions">
+                <button class="btn-ok" onclick="closeModal('modal-view')">ОК</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: Редактирование -->
+    <div id="modal-edit" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('modal-edit')">×</button>
+            <h3>Редактирование заказа</h3>
+            <form id="edit-form" class="modal-body">
+                <input type="hidden" id="edit-id">
+                <label>Имя получателя</label>
+                <input type="text" id="edit-name" required>
+                <label>Адрес доставки</label>
+                <input type="text" id="edit-address" required>
+                
+                <p class="delivery-title" style="margin-top: 15px;">Тип доставки</p>
+                <label class="radio"><input type="radio" name="edit-delivery_type" value="now"> Как можно скорее</label>
+                <label class="radio"><input type="radio" name="edit-delivery_type" value="by_time"> Ко времени</label>
+                
+                <label style="margin-top: 10px;">Время доставки</label>
+                <input type="time" id="edit-time" min="07:00" max="23:00" step="300">
+                
+                <label>Телефон</label>
+                <input type="tel" id="edit-phone" required>
+                <label>Email</label>
+                <input type="email" id="edit-email" required>
+                <label>Комментарий</label>
+                <textarea id="edit-comment" rows="3"></textarea>
+            </form>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-edit')">Отмена</button>
+                <button class="btn-save" onclick="saveEdit()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка: Удаление -->
+    <div id="modal-delete" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('modal-delete')">×</button>
+            <h3>Удаление заказа</h3>
+            <p style="margin: 20px 0; font-weight: 400;">Вы уверены, что хотите удалить заказ?</p>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeModal('modal-delete')">Отмена</button>
+                <button class="btn-delete" onclick="confirmDelete()">Да</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="orders.js"></script>
+</body>
+</html>
