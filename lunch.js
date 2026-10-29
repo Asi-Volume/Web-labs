@@ -1,4 +1,3 @@
-// ВСТАВИТЬ КЛЮЧ ИЗ СДО
 const API_KEY = 'КЛЮЧ';
 const BASE_URL = 'https://edu.std-900.ist.mospolytech.ru/labs/api';
 
@@ -22,13 +21,51 @@ function saveCart(cart) {
 
 async function loadDishes() {
     try {
+        if (!API_KEY || API_KEY === 'КЛЮЧ') throw new Error("Нет ключа");
+
         const response = await fetch(`${BASE_URL}/dishes`);
+        if (!response.ok) throw new Error("Сервер не отвечает");
+        
         dishes = await response.json();
-        restoreSelectionFromCart();
-        renderDishes();
+        
     } catch (error) {
-        console.error('Ошибка загрузки блюд:', error);
+        console.warn('Сервер Мосполитеха недоступен. Загружаем демо-блюда с DummyJSON.');
+        
+        try {
+            //демо данные
+            const demoResponse = await fetch('https://dummyjson.com/recipes?limit=15');
+            const demoData = await demoResponse.json();
+            const categories = ['soup', 'main', 'salad', 'drink', 'dessert'];
+            
+            dishes = demoData.recipes.map((recipe, index) => {
+                return {
+                    id: 9000 + index, // Отдельные ID, чтобы не пересекаться с сервером
+                    keyword: `demo-${index}`,
+                    name: recipe.name,
+                    price: Math.floor(Math.random() * 300) + 150,
+                    category: categories[index % categories.length], // Раскидываем по категориям
+                    count: `${recipe.servings * 100} г`,
+                    image: recipe.image
+                };
+            });
+            
+            const mainContainer = document.querySelector('main');
+            if (!document.getElementById('demo-warning')) {
+                const warning = document.createElement('div');
+                warning.id = 'demo-warning';
+                warning.style.cssText = "background: #fff3e0; color: #d35400; padding: 10px 20px; text-align: center; font-weight: 600; font-size: 14px; border-radius: 8px; margin: 0 auto 20px; max-width: 800px;";
+                warning.textContent = "⚠️ Сервер временно недоступен. Меню загружено с публичного демо-API.";
+                mainContainer.prepend(warning);
+            }
+
+        } catch (demoErr) {
+            alert('Не удалось загрузить меню (сервер и демо-API недоступны).');
+            return;
+        }
     }
+
+    restoreSelectionFromCart();
+    renderDishes();
 }
 
 function restoreSelectionFromCart() {
@@ -66,7 +103,7 @@ function renderDishes() {
         card.setAttribute('data-dish', dish.id);
 
         card.innerHTML = `
-            <img src="${dish.image}" alt="${dish.name}">
+            <img src="${dish.image}" alt="${dish.name}" style="height: 200px; object-fit: cover;">
             <p class="price">${dish.price}₽</p>
             <p class="name">${dish.name}</p>
             <p class="weight">${dish.count}</p>
