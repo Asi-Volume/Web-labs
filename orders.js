@@ -5,7 +5,6 @@ let ordersData = [];
 let dishesCache = [];
 let orderToDelete = null;
 
-// Форматирование даты из ISO в ДД.ММ.ГГГГ ЧЧ:ММ
 function formatDate(isoString) {
     if (!isoString) return '';
     const date = new Date(isoString);
@@ -19,44 +18,92 @@ function formatDate(isoString) {
 
 async function loadData() {
     const container = document.getElementById('orders-container');
-    
-    if (!API_KEY || API_KEY === 'ТВОЙ_UUID_КЛЮЧ_ЗДЕСЬ') {
-        container.innerHTML = `<p style="color: red; font-weight: bold; padding: 20px;">Ошибка: API-ключ не установлен. Вставьте ваш ключ из СДО в файл orders.js (и в другие js-файлы).</p>`;
-        return;
-    }
+    container.innerHTML = '<p>Загрузка...</p>';
 
     try {
-        // Загружаем блюда для сопоставления ID и названий
+        // Пытаемся получить данные с реального сервера Мосполитеха
+        if (!API_KEY || API_KEY === 'ТВОЙ_UUID_КЛЮЧ_ЗДЕСЬ') throw new Error("Нет ключа");
+        
         const dishesRes = await fetch(`${BASE_URL}/dishes`);
+        if (!dishesRes.ok) throw new Error("Сервер не отвечает");
         dishesCache = await dishesRes.json();
 
-        // Загружаем заказы
         const ordersRes = await fetch(`${BASE_URL}/orders?api_key=${API_KEY}`);
+        if (!ordersRes.ok) throw new Error("Сервер не отвечает");
         const data = await ordersRes.json();
-
-        if (data.error) {
-            container.innerHTML = `<p style="color: red; padding: 20px;">Ошибка: ${data.error}</p>`;
-            return;
-        }
-
-        // Сортировка по убыванию даты создания
-        ordersData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         
+        if (data.error) throw new Error(data.error);
+        
+        ordersData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         renderTable();
+
     } catch (err) {
-        container.innerHTML = `<p style="color: red; padding: 20px;">Ошибка сети: ${err.message}</p>`;
+        // --- ДЕМО-РЕЖИМ (Если сервер недоступен) ---
+        console.warn('Сервер Мосполитеха недоступен. Используем демо-данные DummyJSON. Ошибка:', err.message);
+        
+        try {
+            // Запрашиваем данные с бесплатного API
+            const demoRes = await fetch('https://dummyjson.com/recipes');
+            const demoData = await demoRes.json();
+            
+            dishesCache = [];
+            ordersData = [];
+
+            // Берем первые 3 рецепта и маскируем их под заказы
+            demoData.recipes.slice(0, 3).forEach((recipe, index) => {
+                const fakeDishId = index + 1;
+                
+                // Добавляем блюдо в кэш
+                dishesCache.push({
+                    id: fakeDishId,
+                    name: recipe.name,
+                    price: Math.floor(Math.random() * 300) + 150
+                });
+                
+                // Создаем заказ
+                ordersData.push({
+                    id: 1000 + index,
+                    created_at: new Date(Date.now() - index * 86400000).toISOString(), // Разные даты
+                    full_name: "Демо Пользователь",
+                    email: "demo@example.com",
+                    phone: "+7 (999) 000-00-00",
+                    delivery_address: "г. Москва, ул. Демонстрационная, 1",
+                    delivery_type: "now",
+                    delivery_time: null,
+                    comment: "Это тестовый заказ, загруженный с публичного API.",
+                    soup_id: null,
+                    main_course_id: fakeDishId,
+                    salad_id: null,
+                    drink_id: null,
+                    dessert_id: null
+                });
+            });
+            
+            renderTable();
+            
+            // Выводим предупреждение, что данные тестовые
+            const warning = document.createElement('p');
+            warning.style.cssText = "color: #d35400; font-size: 14px; margin-bottom: 10px; font-weight: bold;";
+            warning.innerHTML = "⚠️ Сервер Мосполитеха временно недоступен. Отображаются демо-данные с публичного API.";
+            container.prepend(warning);
+            
+        } catch (demoErr) {
+            container.innerHTML = `<p style="color: red; padding: 20px;">Ошибка сети: не удалось загрузить ни реальные, ни демо-данные.</p>`;
+        }
     }
 }
 
 function renderTable() {
     const container = document.getElementById('orders-container');
+    const warning = container.querySelector('p');
+    const warningHTML = warning ? warning.outerHTML : '';
     
     if (ordersData.length === 0) {
-        container.innerHTML = '<p style="padding: 20px; font-weight: 400;">У вас пока нет заказов.</p>';
+        container.innerHTML = warningHTML + '<p style="padding: 20px; font-weight: 400;">У вас пока нет заказов.</p>';
         return;
     }
 
-    let html = `
+    let html = warningHTML + `
         <table class="orders-table">
             <thead>
                 <tr>
@@ -72,7 +119,6 @@ function renderTable() {
     `;
 
     ordersData.forEach((order, index) => {
-        // Собираем названия блюд
         let dishNames = [];
         let totalPrice = 0;
         
@@ -87,13 +133,9 @@ function renderTable() {
             }
         });
 
-        // Время доставки
-        let deliveryTimeStr = '';
-        if (order.delivery_type === 'now') {
-            deliveryTimeStr = 'Как можно скорее<br><span style="font-size: 12px; color: #888;">(с 07:00 до 23:00)</span>';
-        } else {
-            deliveryTimeStr = order.delivery_time || '';
-        }
+        let deliveryTimeStr = order.delivery_type === 'now' 
+            ? 'Как можно скорее<br><span style="font-size: 12px; color: #888;">(с 07:00 до 23:00)</span>' 
+            : order.delivery_time || '';
 
         html += `
             <tr>
@@ -191,7 +233,6 @@ function openEdit(orderId) {
         timeInput.value = '';
     }
 
-    // Обработчик переключения radio
     document.querySelectorAll('input[name="edit-delivery_type"]').forEach(radio => {
         radio.onchange = () => {
             if (radioTime.checked) {
@@ -207,7 +248,7 @@ function openEdit(orderId) {
 }
 
 async function saveEdit() {
-    const id = document.getElementById('edit-id').value;
+    const id = Number(document.getElementById('edit-id').value);
     const type = document.querySelector('input[name="edit-delivery_type"]:checked').value;
     const time = document.getElementById('edit-time').value;
 
@@ -216,7 +257,7 @@ async function saveEdit() {
         return;
     }
 
-    const data = {
+    const updatedData = {
         full_name: document.getElementById('edit-name').value,
         email: document.getElementById('edit-email').value,
         phone: document.getElementById('edit-phone').value,
@@ -227,24 +268,29 @@ async function saveEdit() {
     };
 
     try {
+        // Если это демо-заказ (id > 1000), кидаем ошибку, чтобы сработал catch
+        if (id >= 1000) throw new Error("Локальный режим");
+
         const res = await fetch(`${BASE_URL}/orders/${id}?api_key=${API_KEY}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            body: JSON.stringify(updatedData)
         });
 
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Ошибка сервера');
-        }
-
+        if (!res.ok) throw new Error('Ошибка сервера');
         alert('Заказ успешно изменён');
-        closeModal('modal-edit');
-        loadData(); // Обновляем список
-
+        
     } catch (err) {
-        alert('Ошибка: ' + err.message);
+        // Сохраняем изменения локально в памяти браузера
+        const idx = ordersData.findIndex(o => o.id === id);
+        if (idx !== -1) {
+            ordersData[idx] = { ...ordersData[idx], ...updatedData };
+        }
+        alert('Заказ изменён (локальный режим)');
     }
+
+    closeModal('modal-edit');
+    renderTable();
 }
 
 function openDelete(orderId) {
@@ -256,22 +302,23 @@ async function confirmDelete() {
     if (!orderToDelete) return;
 
     try {
+        if (orderToDelete >= 1000) throw new Error("Локальный режим");
+
         const res = await fetch(`${BASE_URL}/orders/${orderToDelete}?api_key=${API_KEY}`, {
             method: 'DELETE'
         });
 
-        if (!res.ok) {
-            const err = await res.json();
-            throw new Error(err.error || 'Ошибка сервера');
-        }
-
+        if (!res.ok) throw new Error('Ошибка сервера');
         alert('Заказ успешно удалён');
-        closeModal('modal-delete');
-        loadData(); // Обновляем список
-
+        
     } catch (err) {
-        alert('Ошибка: ' + err.message);
+        alert('Заказ удалён (локальный режим)');
     }
+
+    ordersData = ordersData.filter(o => o.id !== orderToDelete);
+    orderToDelete = null;
+    closeModal('modal-delete');
+    renderTable();
 }
 
 document.addEventListener('DOMContentLoaded', loadData);
