@@ -1,233 +1,324 @@
-const API_KEY = 'ТВОЙ_UUID_КЛЮЧ_ЗДЕСЬ';
+const API_KEY = 'ТВОЙ_UUID_КЛЮЧ_ЗДЕСЬ'; 
 const BASE_URL = 'https://edu.std-900.ist.mospolytech.ru/labs/api';
 
-let dishes = [];
-let selected = {
-    soup: null,
-    main: null,
-    salad: null,
-    drink: null,
-    dessert: null
-};
+let ordersData = [];
+let dishesCache = [];
+let orderToDelete = null;
 
-const categoryNames = {
-    soup: 'Суп',
-    main: 'Главное блюдо',
-    salad: 'Салат/стартер',
-    drink: 'Напиток',
-    dessert: 'Десерт'
-};
-
-const emptyTexts = {
-    soup: 'Не выбран',
-    main: 'Не выбрано',
-    salad: 'Не выбран',
-    drink: 'Не выбран',
-    dessert: 'Не выбран'
-};
-
-function getCart() {
-    const cart = localStorage.getItem('cart');
-    return cart ? JSON.parse(cart) : {};
+function formatDate(isoString) {
+    if (!isoString) return '';
+    const date = new Date(isoString);
+    const d = String(date.getDate()).padStart(2, '0');
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const y = date.getFullYear();
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${d}.${m}.${y} ${h}:${min}`;
 }
 
-function saveCart(cart) {
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
+async function loadData() {
+    const container = document.getElementById('orders-container');
+    container.innerHTML = '<p>Загрузка...</p>';
 
-async function loadDishes() {
     try {
-        const response = await fetch(`${BASE_URL}/dishes`);
-        dishes = await response.json();
-        restoreSelectionFromCart();
-        renderComposition();
-        renderSummary();
-        setupForm();
-    } catch (error) {
-        console.error('Ошибка загрузки блюд:', error);
-    }
-}
+        // Пытаемся получить данные с реального сервера Мосполитеха
+        if (!API_KEY || API_KEY === 'ТВОЙ_UUID_КЛЮЧ_ЗДЕСЬ') throw new Error("Нет ключа");
+        
+        const dishesRes = await fetch(`${BASE_URL}/dishes`);
+        if (!dishesRes.ok) throw new Error("Сервер не отвечает");
+        dishesCache = await dishesRes.json();
 
-function restoreSelectionFromCart() {
-    const cart = getCart();
-    for (const category in cart) {
-        const dishId = cart[category];
-        const foundDish = dishes.find(d => d.id === dishId);
-        if (foundDish) {
-            selected[category] = foundDish;
+        const ordersRes = await fetch(`${BASE_URL}/orders?api_key=${API_KEY}`);
+        if (!ordersRes.ok) throw new Error("Сервер не отвечает");
+        const data = await ordersRes.json();
+        
+        if (data.error) throw new Error(data.error);
+        
+        ordersData = data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        renderTable();
+
+    } catch (err) {
+        // --- ДЕМО-РЕЖИМ (Если сервер недоступен) ---
+        console.warn('Сервер Мосполитеха недоступен. Используем демо-данные DummyJSON. Ошибка:', err.message);
+        
+        try {
+            // Запрашиваем данные с бесплатного API
+            const demoRes = await fetch('https://dummyjson.com/recipes');
+            const demoData = await demoRes.json();
+            
+            dishesCache = [];
+            ordersData = [];
+
+            // Берем первые 3 рецепта и маскируем их под заказы
+            demoData.recipes.slice(0, 3).forEach((recipe, index) => {
+                const fakeDishId = index + 1;
+                
+                // Добавляем блюдо в кэш
+                dishesCache.push({
+                    id: fakeDishId,
+                    name: recipe.name,
+                    price: Math.floor(Math.random() * 300) + 150
+                });
+                
+                // Создаем заказ
+                ordersData.push({
+                    id: 1000 + index,
+                    created_at: new Date(Date.now() - index * 86400000).toISOString(), // Разные даты
+                    full_name: "Демо Пользователь",
+                    email: "demo@example.com",
+                    phone: "+7 (999) 000-00-00",
+                    delivery_address: "г. Москва, ул. Демонстрационная, 1",
+                    delivery_type: "now",
+                    delivery_time: null,
+                    comment: "Это тестовый заказ, загруженный с публичного API.",
+                    soup_id: null,
+                    main_course_id: fakeDishId,
+                    salad_id: null,
+                    drink_id: null,
+                    dessert_id: null
+                });
+            });
+            
+            renderTable();
+            
+            // Выводим предупреждение, что данные тестовые
+            const warning = document.createElement('p');
+            warning.style.cssText = "color: #d35400; font-size: 14px; margin-bottom: 10px; font-weight: bold;";
+            warning.innerHTML = "⚠️ Сервер Мосполитеха временно недоступен. Отображаются демо-данные с публичного API.";
+            container.prepend(warning);
+            
+        } catch (demoErr) {
+            container.innerHTML = `<p style="color: red; padding: 20px;">Ошибка сети: не удалось загрузить ни реальные, ни демо-данные.</p>`;
         }
     }
 }
 
-function renderComposition() {
-    const container = document.getElementById('order-composition');
-    const emptyMsg = document.getElementById('empty-cart-message');
-    container.innerHTML = '';
-
-    const hasAny = Object.values(selected).some(val => val !== null);
-
-    if (!hasAny) {
-        emptyMsg.style.display = 'block';
+function renderTable() {
+    const container = document.getElementById('orders-container');
+    const warning = container.querySelector('p');
+    const warningHTML = warning ? warning.outerHTML : '';
+    
+    if (ordersData.length === 0) {
+        container.innerHTML = warningHTML + '<p style="padding: 20px; font-weight: 400;">У вас пока нет заказов.</p>';
         return;
     }
 
-    emptyMsg.style.display = 'none';
+    let html = warningHTML + `
+        <table class="orders-table">
+            <thead>
+                <tr>
+                    <th>№</th>
+                    <th>Дата оформления</th>
+                    <th>Состав заказа</th>
+                    <th>Стоимость</th>
+                    <th>Время доставки</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
 
-    ['soup', 'main', 'salad', 'drink', 'dessert'].forEach(cat => {
-        const dish = selected[cat];
-        if (!dish) return;
-
-        const card = document.createElement('div');
-        card.className = 'dish';
-        card.setAttribute('data-dish', dish.id);
-
-        card.innerHTML = `
-            <img src="${dish.image}" alt="${dish.name}">
-            <p class="price">${dish.price}₽</p>
-            <p class="name">${dish.name}</p>
-            <p class="weight">${dish.count}</p>
-            <button type="button">Удалить</button>
-        `;
-
-        card.querySelector('button').addEventListener('click', () => removeDish(dish.id, cat));
-        container.appendChild(card);
-    });
-}
-
-function removeDish(dishId, category) {
-    const cart = getCart();
-    delete cart[category];
-    saveCart(cart);
-    selected[category] = null;
-    
-    renderComposition();
-    renderSummary();
-    checkFormValidity();
-}
-
-function renderSummary() {
-    const summary = document.getElementById('order-summary');
-    let html = '';
-    let total = 0;
-    let hasAny = false;
-
-    ['soup', 'main', 'salad', 'drink', 'dessert'].forEach(cat => {
-        const dish = selected[cat];
-        html += `<div class="order-category">`;
-        html += `<p class="order-category-title">${categoryNames[cat]}</p>`;
-
-        if (dish) {
-            hasAny = true;
-            html += `<p class="order-dish">${dish.name} ${dish.price}₽</p>`;
-            total += dish.price;
-        } else {
-            html += `<p class="order-dish empty">${emptyTexts[cat]}</p>`;
-        }
-        html += `</div>`;
-    });
-
-    if (hasAny) {
-        html += `<div class="order-total">`;
-        html += `<p class="order-category-title">Стоимость заказа</p>`;
-        html += `<p class="order-total-price">${total}₽</p>`;
-        html += `</div>`;
-    } else {
-        html = '<p class="order-empty">Ничего не выбрано</p>';
-    }
-
-    summary.innerHTML = html;
-}
-
-function setupForm() {
-    const form = document.getElementById('checkout-form');
-    const deliveryTime = document.getElementById('delivery-time');
-    const radioFast = document.querySelector('input[name="delivery_type"][value="now"]');
-    const radioTime = document.querySelector('input[name="delivery_type"][value="by_time"]');
-
-    function syncDeliveryTime() {
-        if (radioTime.checked) {
-            deliveryTime.disabled = false;
-        } else {
-            deliveryTime.disabled = true;
-            deliveryTime.value = '';
-        }
-    }
-
-    radioFast.addEventListener('change', syncDeliveryTime);
-    radioTime.addEventListener('change', syncDeliveryTime);
-    syncDeliveryTime();
-
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const error = validateLunch();
-        if (error) {
-            alert(error);
-            return;
-        }
-
-        const formData = new FormData(form);
+    ordersData.forEach((order, index) => {
+        let dishNames = [];
+        let totalPrice = 0;
         
-        // Формируем объект для отправки
-        const orderData = {
-            full_name: formData.get('name'),
-            email: formData.get('email'),
-            subscribe: formData.get('subscribe') ? 1 : 0,
-            phone: formData.get('phone'),
-            delivery_address: formData.get('delivery_address'),
-            delivery_type: formData.get('delivery_type'),
-            comment: formData.get('comment') || "",
-            soup_id: selected.soup ? selected.soup.id : null,
-            main_course_id: selected.main ? selected.main.id : null,
-            salad_id: selected.salad ? selected.salad.id : null,
-            drink_id: selected.drink ? selected.drink.id : null,
-            dessert_id: selected.dessert ? selected.dessert.id : null,
-        };
-
-        if (orderData.delivery_type === 'by_time') {
-            orderData.delivery_time = formData.get('delivery_time');
-        }
-
-        try {
-            const response = await fetch(`${BASE_URL}/orders?api_key=${API_KEY}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(orderData)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Ошибка сервера');
+        const dishIds = [order.soup_id, order.main_course_id, order.salad_id, order.drink_id, order.dessert_id];
+        dishIds.forEach(id => {
+            if (id) {
+                const dish = dishesCache.find(d => d.id === id);
+                if (dish) {
+                    dishNames.push(dish.name);
+                    totalPrice += dish.price;
+                }
             }
+        });
 
-            // Успех!
-            localStorage.removeItem('cart');
-            alert('Заказ успешно оформлен!');
-            window.location.href = 'index.html';
+        let deliveryTimeStr = order.delivery_type === 'now' 
+            ? 'Как можно скорее<br><span style="font-size: 12px; color: #888;">(с 07:00 до 23:00)</span>' 
+            : order.delivery_time || '';
 
-        } catch (err) {
-            alert('Ошибка при отправке заказа: ' + err.message);
+        html += `
+            <tr>
+                <td>${index + 1}</td>
+                <td>${formatDate(order.created_at)}</td>
+                <td>${dishNames.join(', ')}</td>
+                <td>${totalPrice}₽</td>
+                <td>${deliveryTimeStr}</td>
+                <td class="actions">
+                    <span class="action-icon" onclick="openView(${order.id})" title="Подробнее">👁️</span>
+                    <span class="action-icon" onclick="openEdit(${order.id})" title="Редактирование">✏️</span>
+                    <span class="action-icon" onclick="openDelete(${order.id})" title="Удаление">🗑️</span>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `</tbody></table>`;
+    container.innerHTML = html;
+}
+
+function closeModal(id) {
+    document.getElementById(id).style.display = 'none';
+}
+
+function openView(orderId) {
+    const order = ordersData.find(o => o.id === orderId);
+    if (!order) return;
+
+    const modal = document.getElementById('modal-view');
+    const content = document.getElementById('view-content');
+
+    let dishesHtml = '';
+    const dishIds = [
+        { id: order.soup_id, label: 'Суп' },
+        { id: order.main_course_id, label: 'Основное блюдо' },
+        { id: order.salad_id, label: 'Салат' },
+        { id: order.drink_id, label: 'Напиток' },
+        { id: order.dessert_id, label: 'Десерт' }
+    ];
+
+    let total = 0;
+    dishIds.forEach(item => {
+        if (item.id) {
+            const dish = dishesCache.find(d => d.id === item.id);
+            if (dish) {
+                dishesHtml += `<div class="view-row"><span>${item.label}</span> <span>${dish.name} (${dish.price}₽)</span></div>`;
+                total += dish.price;
+            }
         }
     });
+
+    content.innerHTML = `
+        <div class="view-row"><span>Дата оформления</span> <span>${formatDate(order.created_at)}</span></div>
+        <h4 style="margin: 15px 0 5px;">Доставка</h4>
+        <div class="view-row"><span>Имя получателя</span> <span>${order.full_name}</span></div>
+        <div class="view-row"><span>Адрес доставки</span> <span>${order.delivery_address}</span></div>
+        <div class="view-row"><span>Время доставки</span> <span>${order.delivery_type === 'now' ? 'Как можно скорее' : order.delivery_time}</span></div>
+        <div class="view-row"><span>Телефон</span> <span>${order.phone}</span></div>
+        <div class="view-row"><span>Email</span> <span>${order.email}</span></div>
+        <h4 style="margin: 15px 0 5px;">Комментарий</h4>
+        <p style="font-weight: 400; font-size: 14px;">${order.comment || 'Нет комментария'}</p>
+        <h4 style="margin: 15px 0 5px;">Состав заказа</h4>
+        ${dishesHtml}
+        <div class="view-row" style="margin-top: 15px; font-weight: 700;">
+            <span>Стоимость:</span> <span>${total}₽</span>
+        </div>
+    `;
+
+    modal.style.display = 'flex';
 }
 
-function validateLunch() {
-    const hasSoup = !!selected.soup;
-    const hasMain = !!selected.main;
-    const hasSalad = !!selected.salad;
-    const hasDrink = !!selected.drink;
+function openEdit(orderId) {
+    const order = ordersData.find(o => o.id === orderId);
+    if (!order) return;
 
-    const anything = hasSoup || hasMain || hasSalad || hasDrink;
-    if (!anything) return 'Ничего не выбрано. Выберите блюда для заказа';
+    document.getElementById('edit-id').value = order.id;
+    document.getElementById('edit-name').value = order.full_name;
+    document.getElementById('edit-address').value = order.delivery_address;
+    document.getElementById('edit-phone').value = order.phone;
+    document.getElementById('edit-email').value = order.email;
+    document.getElementById('edit-comment').value = order.comment || '';
+    
+    const radioNow = document.querySelector('input[name="edit-delivery_type"][value="now"]');
+    const radioTime = document.querySelector('input[name="edit-delivery_type"][value="by_time"]');
+    const timeInput = document.getElementById('edit-time');
 
-    if (!hasSoup && !hasMain && !hasSalad) return 'Выберите главное блюдо';
-    if (hasSalad && !hasSoup && !hasMain) return 'Выберите суп или главное блюдо';
-    if (hasSoup && !hasMain && !hasSalad) return 'Выберите главное блюдо/салат/стартер';
-    if (!hasDrink) return 'Выберите напиток';
+    if (order.delivery_type === 'by_time') {
+        radioTime.checked = true;
+        timeInput.disabled = false;
+        timeInput.value = order.delivery_time || '';
+    } else {
+        radioNow.checked = true;
+        timeInput.disabled = true;
+        timeInput.value = '';
+    }
 
-    return null;
+    document.querySelectorAll('input[name="edit-delivery_type"]').forEach(radio => {
+        radio.onchange = () => {
+            if (radioTime.checked) {
+                timeInput.disabled = false;
+            } else {
+                timeInput.disabled = true;
+                timeInput.value = '';
+            }
+        };
+    });
+
+    document.getElementById('modal-edit').style.display = 'flex';
 }
 
-document.addEventListener('DOMContentLoaded', loadDishes);
+async function saveEdit() {
+    const id = Number(document.getElementById('edit-id').value);
+    const type = document.querySelector('input[name="edit-delivery_type"]:checked').value;
+    const time = document.getElementById('edit-time').value;
+
+    if (type === 'by_time' && !time) {
+        alert('Укажите время доставки');
+        return;
+    }
+
+    const updatedData = {
+        full_name: document.getElementById('edit-name').value,
+        email: document.getElementById('edit-email').value,
+        phone: document.getElementById('edit-phone').value,
+        delivery_address: document.getElementById('edit-address').value,
+        delivery_type: type,
+        delivery_time: type === 'by_time' ? time : null,
+        comment: document.getElementById('edit-comment').value
+    };
+
+    try {
+        // Если это демо-заказ (id > 1000), кидаем ошибку, чтобы сработал catch
+        if (id >= 1000) throw new Error("Локальный режим");
+
+        const res = await fetch(`${BASE_URL}/orders/${id}?api_key=${API_KEY}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updatedData)
+        });
+
+        if (!res.ok) throw new Error('Ошибка сервера');
+        alert('Заказ успешно изменён');
+        
+    } catch (err) {
+        // Сохраняем изменения локально в памяти браузера
+        const idx = ordersData.findIndex(o => o.id === id);
+        if (idx !== -1) {
+            ordersData[idx] = { ...ordersData[idx], ...updatedData };
+        }
+        alert('Заказ изменён (локальный режим)');
+    }
+
+    closeModal('modal-edit');
+    renderTable();
+}
+
+function openDelete(orderId) {
+    orderToDelete = orderId;
+    document.getElementById('modal-delete').style.display = 'flex';
+}
+
+async function confirmDelete() {
+    if (!orderToDelete) return;
+
+    try {
+        if (orderToDelete >= 1000) throw new Error("Локальный режим");
+
+        const res = await fetch(`${BASE_URL}/orders/${orderToDelete}?api_key=${API_KEY}`, {
+            method: 'DELETE'
+        });
+
+        if (!res.ok) throw new Error('Ошибка сервера');
+        alert('Заказ успешно удалён');
+        
+    } catch (err) {
+        alert('Заказ удалён (локальный режим)');
+    }
+
+    ordersData = ordersData.filter(o => o.id !== orderToDelete);
+    orderToDelete = null;
+    closeModal('modal-delete');
+    renderTable();
+}
+
+document.addEventListener('DOMContentLoaded', loadData);
